@@ -53,7 +53,7 @@ fun TasksScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    // aqui fica a navegação pára a tela de criação de tarefa
+                    navController.navigate("CreateTaskScreen")
                 }
             ) {
                 Icon(

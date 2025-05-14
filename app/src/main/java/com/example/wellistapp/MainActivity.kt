@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.wellistapp.ui.theme.WellistAppTheme
+import com.example.wellistapp.view.CreateTaskScreen
 import com.example.wellistapp.view.TasksScreen
 
 
@@ -21,6 +22,9 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "TasksScreen") {
                     composable(route = "TasksScreen") {
                         TasksScreen(navController)
+                    }
+                    composable(route = "CreateTaskScreen") {
+                        CreateTaskScreen(navController)
                     }
                 }
             }
