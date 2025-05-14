@@ -36,7 +36,7 @@ fun TasksScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 title = {
-                    Text("Wellist")
+                    // Pode ou não ter algo escrito
                 }
             )
         },
