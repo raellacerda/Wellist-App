@@ -78,6 +78,7 @@ fun CreateTaskScreen(navController: NavController) {
             var selectedPriority by remember { mutableStateOf(Priority.LOW.toString()) }
             var dateSelected by remember { mutableStateOf<String>("Choose a deadline") }
 
+
             TextBox(
                 value = stateOfTaskName,
                 onValueChange = {stateOfTaskName = it},
@@ -109,7 +110,10 @@ fun CreateTaskScreen(navController: NavController) {
                     }
                 )
             )
-            DatePickerComponent(dateSelected = dateSelected)
+            DatePickerComponent(
+                dateSelected = dateSelected,
+                onDateSelected = {dateSelected = it}
+            )
 
             Text(
                 "Choose a priority",

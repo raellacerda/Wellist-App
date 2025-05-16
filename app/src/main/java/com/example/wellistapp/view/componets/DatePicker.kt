@@ -27,21 +27,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.wellistapp.R
-
-
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun DatePickerComponent (
+    dateSelected: String,
+    onDateSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    dateSelected : String
 ) {
 
-
-    //precisa elevar o estado
     val openDialog = remember { mutableStateOf(false) }
-    var inputFinished = remember { mutableStateOf(false) }
+
 
     Row (
         horizontalArrangement = Arrangement.Center,
@@ -78,9 +78,17 @@ fun DatePickerComponent (
                     TextButton(
                         onClick = {
                             openDialog.value = false
-                            dateSelected = "${datePickerState.selectedDateMillis}"
-                            inputFinished.value = true
+                            val millis = datePickerState.selectedDateMillis
+                            millis?.let {
+                                val date = Instant.ofEpochMilli(it)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
 
+                                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                                val formatted = date.format(formatter)
+
+                                onDateSelected(formatted)
+                            }
                         },
                         enabled = confirmEnabled.value
                     ) {
