@@ -152,6 +152,6 @@ fun TaskItemPreview () {
         "Title",
         "Uma descrição bem grande, de novo, para testar suficientemente o espaçamento entre as linhas e o tamanho da column",
         Priority.HIGH,
-        Date(),
-        null))
+        Date().time,
+        0L))
 }

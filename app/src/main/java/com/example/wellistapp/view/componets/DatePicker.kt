@@ -18,29 +18,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.wellistapp.R
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.example.wellistapp.data.Converters
 
 
 @ExperimentalMaterial3Api
 @Composable
 fun DatePickerComponent (
-    dateSelected: String,
-    onDateSelected: (String) -> Unit,
+    dateSelected: Long,
+    onDateSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
     val openDialog = remember { mutableStateOf(false) }
+    val converter = Converters()
 
 
     Row (
@@ -60,7 +57,7 @@ fun DatePickerComponent (
                 contentDescription = ""
             )
         }
-        Text(dateSelected)
+        Text(converter.timestampToString(dateSelected))
 
         if (openDialog.value) {
 
@@ -80,14 +77,7 @@ fun DatePickerComponent (
                             openDialog.value = false
                             val millis = datePickerState.selectedDateMillis
                             millis?.let {
-                                val date = Instant.ofEpochMilli(it)
-                                    .atZone(ZoneId.systemDefault())
-                                    .toLocalDate()
-
-                                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                                val formatted = date.format(formatter)
-
-                                onDateSelected(formatted)
+                                onDateSelected(millis)
                             }
                         },
                         enabled = confirmEnabled.value

@@ -5,13 +5,13 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 
-@Entity
+@Entity(tableName = "tasks")
 data class Task (
     @PrimaryKey(autoGenerate = true) val id : Int,
     val title : String,
     val description: String,
     val priority: Priority,
-    val createdIn : Date,
-    val term : Date?
+    val createdIn : Long = Date().time,
+    val term : Long
 )
 

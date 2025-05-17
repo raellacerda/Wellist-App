@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +41,7 @@ import com.example.wellistapp.data.Priority
 import com.example.wellistapp.view.componets.DatePickerComponent
 import com.example.wellistapp.view.componets.PriorityRadioGroupComponent
 import com.example.wellistapp.view.componets.TextBox
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +78,7 @@ fun CreateTaskScreen(navController: NavController) {
             val focusManager = LocalFocusManager.current
             val focusRequesterDescription = remember { FocusRequester()}
             var selectedPriority by remember { mutableStateOf(Priority.LOW.toString()) }
-            var dateSelected by remember { mutableStateOf<String>("Choose a deadline") }
+            var dateSelected by remember { mutableLongStateOf(0L) }
 
 
             TextBox(
