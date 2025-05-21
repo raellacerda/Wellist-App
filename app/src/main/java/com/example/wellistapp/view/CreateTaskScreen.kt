@@ -41,7 +41,6 @@ import com.example.wellistapp.data.Priority
 import com.example.wellistapp.view.componets.DatePickerComponent
 import com.example.wellistapp.view.componets.PriorityRadioGroupComponent
 import com.example.wellistapp.view.componets.TextBox
-import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,10 +74,12 @@ fun CreateTaskScreen(navController: NavController) {
         ) {
             var stateOfTaskName by remember { mutableStateOf("") }
             var stateOfDescriptionName by remember { mutableStateOf("")}
-            val focusManager = LocalFocusManager.current
-            val focusRequesterDescription = remember { FocusRequester()}
             var selectedPriority by remember { mutableStateOf(Priority.LOW.toString()) }
             var dateSelected by remember { mutableLongStateOf(0L) }
+
+            // permanece na ui pq so diz respeito a ela
+            val focusManager = LocalFocusManager.current
+            val focusRequesterDescription = remember { FocusRequester()}
 
 
             TextBox(
