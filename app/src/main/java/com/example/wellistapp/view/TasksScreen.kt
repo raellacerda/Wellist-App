@@ -17,10 +17,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.wellistapp.viewModel.TasksViewModel
+import androidx.compose.runtime.getValue
+import dagger.hilt.android.HiltAndroidApp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,6 +34,12 @@ import androidx.navigation.NavController
 fun TasksScreen(
     navController: NavController
 ) {
+    val viewModel: TasksViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getTasksData()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,7 +75,6 @@ fun TasksScreen(
             }
         }
     ) { innerPadding ->
-
         // esse componente sera alterado para LazyColumn quando tivermos os itens
         Column (
             modifier = Modifier.padding(innerPadding)

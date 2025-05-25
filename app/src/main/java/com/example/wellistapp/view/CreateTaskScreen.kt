@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,17 +37,22 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.wellistapp.R
 import com.example.wellistapp.data.Priority
 import com.example.wellistapp.view.componets.DatePickerComponent
 import com.example.wellistapp.view.componets.PriorityRadioGroupComponent
 import com.example.wellistapp.view.componets.TextBox
-
+import com.example.wellistapp.viewModel.CreateTaskViewModel
+import dagger.hilt.android.HiltAndroidApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTaskScreen(navController: NavController) {
+    val viewModel: CreateTaskViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -72,19 +79,14 @@ fun CreateTaskScreen(navController: NavController) {
                 .padding(it),
             horizontalAlignment = Alignment.Start
         ) {
-            var stateOfTaskName by remember { mutableStateOf("") }
-            var stateOfDescriptionName by remember { mutableStateOf("")}
-            var selectedPriority by remember { mutableStateOf(Priority.LOW.toString()) }
-            var dateSelected by remember { mutableLongStateOf(0L) }
-
             // permanece na ui pq so diz respeito a ela
             val focusManager = LocalFocusManager.current
             val focusRequesterDescription = remember { FocusRequester()}
 
 
             TextBox(
-                value = stateOfTaskName,
-                onValueChange = {stateOfTaskName = it},
+                value = uiState.taskName ?: "",
+                onValueChange = {viewModel.onChangeTaskName(it)},
                 modifier = Modifier.fillMaxWidth()
                     .padding(20.dp),
                 label = "Name",
@@ -98,8 +100,8 @@ fun CreateTaskScreen(navController: NavController) {
                 imeAction = ImeAction.Next
             )
             TextBox(
-                value = stateOfDescriptionName,
-                onValueChange = {stateOfDescriptionName = it},
+                value = uiState.taskDescription ?: "",
+                onValueChange = {viewModel.onChangeTaskDescription(it)},
                 modifier = Modifier.fillMaxWidth()
                     .padding(20.dp)
                     .focusRequester(focusRequesterDescription),
@@ -114,8 +116,8 @@ fun CreateTaskScreen(navController: NavController) {
                 )
             )
             DatePickerComponent(
-                dateSelected = dateSelected,
-                onDateSelected = {dateSelected = it}
+                dateSelected = uiState.taskDate ?: 0L,
+                onDateSelected = {viewModel.onChangeTaskDate(it)}
             )
 
             Text(
@@ -126,15 +128,28 @@ fun CreateTaskScreen(navController: NavController) {
             )
             PriorityRadioGroupComponent(
                 modifier = Modifier.padding(20.dp),
-                selectedOption = selectedPriority,
-                onOptionSelected = {selectedPriority = it}
+                selectedOption = uiState.taskPriority?.name ?: Priority.LOW.name,
+                onOptionSelected = {viewModel.onChangeTaskPriority(Priority.valueOf(it))}
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
+            if (uiState.isSaving) {
+                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+            }
+            uiState.errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
             Button(
                 onClick = {
-                    // implementar transição dos dados
+                    viewModel.saveTask()
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {

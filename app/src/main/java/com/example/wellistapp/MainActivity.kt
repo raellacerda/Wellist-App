@@ -10,8 +10,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.wellistapp.ui.theme.WellistAppTheme
 import com.example.wellistapp.view.CreateTaskScreen
 import com.example.wellistapp.view.TasksScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
