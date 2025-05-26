@@ -1,13 +1,17 @@
 package com.example.wellistapp.view
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,7 +30,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.wellistapp.viewModel.TasksViewModel
 import androidx.compose.runtime.getValue
-import dagger.hilt.android.HiltAndroidApp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.example.wellistapp.view.componets.TaskItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,16 +58,16 @@ fun TasksScreen(
                 }
             )
         },
-        bottomBar = {
-            BottomAppBar {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Aqui ficara a tab bar",
-                )
-            }
-        },
+//        bottomBar = {
+//            BottomAppBar {
+//                Text(
+//                    modifier = Modifier
+//                        .fillMaxWidth(),
+//                    textAlign = TextAlign.Center,
+//                    text = "Aqui ficara a tab bar",
+//                )
+//            }
+//        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -78,11 +84,54 @@ fun TasksScreen(
         // esse componente sera alterado para LazyColumn quando tivermos os itens
         Column (
             modifier = Modifier.padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
         ) {
-                Text("Aqui colocaremos os itens")
+               when {
+                   uiState.isLoading -> {
+                       Box(
+                           modifier = Modifier.fillMaxSize(),
+                           contentAlignment = Alignment.Center
+                       ) {
+                           CircularProgressIndicator()
+                       }
+                   }
+
+                   uiState.errorMessage != null -> {
+                       Box(
+                           modifier = Modifier.fillMaxSize(),
+                           contentAlignment = Alignment.Center
+                       ) {
+                           Text(
+                               text = uiState.errorMessage ?: "Unknown",
+                               color = Color.Red,
+                               textAlign = TextAlign.Center
+                           )
+                       }
+                   }
+
+                   uiState.tasks.isEmpty() -> {
+                       Box(
+                           modifier = Modifier.fillMaxSize(),
+                           contentAlignment = Alignment.Center
+                       ) {
+                           Text("No tasks registered yet")
+                       }
+                   }
+
+                   else -> {
+                       LazyColumn(
+                           modifier = Modifier
+                               .fillMaxSize()
+                               .padding(horizontal = 8.dp, vertical = 8.dp),
+                           verticalArrangement = Arrangement.spacedBy(8.dp)
+                       ) {
+                           items(uiState.tasks) {
+                               TaskItem(it)
+                           }
+
+                       }
+                   }
+               }
         }
     }
 }

@@ -22,10 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -45,7 +42,6 @@ import com.example.wellistapp.view.componets.DatePickerComponent
 import com.example.wellistapp.view.componets.PriorityRadioGroupComponent
 import com.example.wellistapp.view.componets.TextBox
 import com.example.wellistapp.viewModel.CreateTaskViewModel
-import dagger.hilt.android.HiltAndroidApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
