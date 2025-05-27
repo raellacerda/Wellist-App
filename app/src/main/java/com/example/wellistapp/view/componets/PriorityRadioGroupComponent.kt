@@ -40,7 +40,7 @@ fun PriorityRadioGroupComponent (
     )
 
     Column(
-        modifier = Modifier.selectableGroup()
+        modifier = modifier.selectableGroup()
             .fillMaxWidth()
     ) {
         radioOptions.forEach {

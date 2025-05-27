@@ -13,12 +13,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -29,33 +26,35 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wellistapp.R
 import com.example.wellistapp.data.Priority
 import com.example.wellistapp.data.Task
-import java.util.Date
+
 
 @Composable
 fun TaskItem (
-    task: Task
+    task: Task,
+    onEdit: (Int) -> Unit,
+    onDelete: (Int) -> Unit,
+    onCheckedChange:(Boolean) -> Unit
 ){
-    val priorityLevel: String = when(task.priority) {
-        Priority.HIGH -> Priority.HIGH.toString()
-        Priority.MEDIUM ->  Priority.MEDIUM.toString()
-        Priority.LOW -> Priority.LOW.toString()
 
+    val priorityLevel: String = task.priority.toString()
+
+    var color = when(priorityLevel) {
+        Priority.HIGH.toString() -> Color.Red
+        Priority.MEDIUM.toString() -> Color.Yellow
+        else -> Color.Green
     }
-    var checked by remember { mutableStateOf(true) }
 
     Card(
         modifier = Modifier.fillMaxWidth()
-            .height(160.dp)
             .padding(16.dp),
         elevation = CardDefaults.cardElevation(20.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Unspecified)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row ( //Linha Titulo/priority
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -77,7 +76,7 @@ fun TaskItem (
                 fontSize = 12.sp,
                 fontFamily = FontFamily.Default,
                 textAlign = TextAlign.End,
-                color = Color.Red
+                color = color
             )
         }
         Column(//Coluna
@@ -98,7 +97,8 @@ fun TaskItem (
                     lineBreak = LineBreak.Paragraph,
                     hyphens = Hyphens.Auto
 
-                )
+                ),
+                modifier = Modifier.padding(end = 10.dp)
             )
 
         }
@@ -110,9 +110,7 @@ fun TaskItem (
         )
         {
             IconButton(
-                onClick = { //Implementar BD (edição)
-
-                }
+                onClick = {onEdit(task.id)}
             ) {
                 Icon( //Editar tarefa
                     painter = painterResource(R.drawable.baseline_edit_24),
@@ -123,9 +121,7 @@ fun TaskItem (
                 )
             }
             IconButton(
-                onClick = { //Implementar BD (delete)
-
-                }
+                onClick = {onDelete(task.id)}
             ) {
                 Icon( //Excluir tarefa
                     painter = painterResource(R.drawable.outline_delete_24),
@@ -136,22 +132,10 @@ fun TaskItem (
                 )
             }
             Checkbox( //Concluir tarefa
-                checked = false,
-                onCheckedChange = {checked = true},
+                checked = task.isDone,
+                onCheckedChange = onCheckedChange,
                 modifier = Modifier.scale(0.8f)
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TaskItemPreview () {
-    TaskItem(Task(
-        1,
-        "Title",
-        "Uma descrição bem grande, de novo, para testar suficientemente o espaçamento entre as linhas e o tamanho da column",
-        Priority.HIGH,
-        Date().time,
-        0L))
 }

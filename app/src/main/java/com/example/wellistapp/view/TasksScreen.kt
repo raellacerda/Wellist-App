@@ -58,16 +58,6 @@ fun TasksScreen(
                 }
             )
         },
-//        bottomBar = {
-//            BottomAppBar {
-//                Text(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                    textAlign = TextAlign.Center,
-//                    text = "Aqui ficara a tab bar",
-//                )
-//            }
-//        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -117,7 +107,6 @@ fun TasksScreen(
                            Text("No tasks registered yet")
                        }
                    }
-
                    else -> {
                        LazyColumn(
                            modifier = Modifier
@@ -125,8 +114,16 @@ fun TasksScreen(
                                .padding(horizontal = 8.dp, vertical = 8.dp),
                            verticalArrangement = Arrangement.spacedBy(8.dp)
                        ) {
-                           items(uiState.tasks) {
-                               TaskItem(it)
+                           items(uiState.tasks) { task ->
+                               TaskItem(
+                                   task = task,
+                                   onEdit = {},
+                                   onDelete = { taskId -> viewModel.deleteTask(task)},
+                                   onCheckedChange = {isChecked -> viewModel.updateTaskChecked(
+                                       task,
+                                       isChecked
+                                   )}
+                               )
                            }
 
                        }

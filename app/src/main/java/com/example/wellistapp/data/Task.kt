@@ -12,6 +12,7 @@ data class Task (
     val description: String,
     val priority: Priority,
     val createdIn : Long = Date().time,
-    val term : Long
+    val term : Long,
+    val isDone: Boolean = false
 )
 

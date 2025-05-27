@@ -2,6 +2,7 @@ package com.example.wellistapp.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wellistapp.data.Task
 import com.example.wellistapp.data.TaskRepository
 import com.example.wellistapp.uiState.TasksListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,9 @@ class TasksViewModel @Inject constructor(private val repository: TaskRepository)
 
     private val _uiState = MutableStateFlow(TasksListUiState())
     val uiState: StateFlow<TasksListUiState> =  _uiState.asStateFlow()
+
+    private val _taskBeingEdited = MutableStateFlow<Int?>(null)
+    val taskBeingEdited : StateFlow<Int?> = _taskBeingEdited
 
     init {
         getTasksData()
@@ -39,4 +43,38 @@ class TasksViewModel @Inject constructor(private val repository: TaskRepository)
            }
        }
     }
+    fun deleteTask (task: Task) {
+        viewModelScope.launch {
+            try {
+                repository.delete(task)
+                getTasksData()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Error deleting task: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun updateTaskChecked(task: Task, isDone: Boolean) {
+        viewModelScope.launch {
+            try {
+                val task = _uiState.value.tasks.find { it.id == task.id }
+                task?.let {
+                    val updatedTask = it.copy(isDone = isDone)
+                    repository.update(updatedTask)
+                    getTasksData()
+                }
+            } catch(e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = "Error updating task: ${e.message} ")
+            }
+        }
+    }
+
+    fun onEditTask(task: Task) {
+        _taskBeingEdited.value = task.id
+    }
+
+
+
 }
