@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wellistapp.R
@@ -49,12 +51,16 @@ fun TaskItem (
         else -> Color.Green
     }
 
+    val backgroundColor = if (task.isDone) Color.LightGray else MaterialTheme.colorScheme.surface
+    val cardAlpha = if (task.isDone) 0.5f else 1f
+
     Card(
         modifier = Modifier.fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .alpha(cardAlpha),
         elevation = CardDefaults.cardElevation(20.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row ( //Linha Titulo/priority
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -69,7 +75,7 @@ fun TaskItem (
                 textAlign = TextAlign.Left,
                 maxLines = 1,
                 color = Color.DarkGray,
-
+                textDecoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None
                 )
             Text(//Priority
                 text = priorityLevel,
