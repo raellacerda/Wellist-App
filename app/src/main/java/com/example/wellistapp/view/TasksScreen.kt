@@ -61,7 +61,7 @@ fun TasksScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
-                title = { /* Título opcional */ }
+                title = {  }
             )
         },
         floatingActionButton = {
@@ -114,18 +114,21 @@ fun TasksScreen(
 
                             TaskItem(
                                 task = task.copy(isDone = checkedState),
-                                onEdit = {},
-                                onDelete = { viewModel.deleteTask(task) },
+                                onEdit = {
+                                    navController.navigate("CreateTaskScreen?taskId=${task.id}")
+                                },
+                                onDelete = {
+                                    viewModel.deleteTask(task)
+                                },
                                 onCheckedChange = { isChecked ->
                                     checkedState = isChecked
                                     if (isChecked) {
                                         taskToDelete = task
                                         showDeleteDialog = true
-                                    } else {
-                                        viewModel.updateTaskChecked(task, false)
                                     }
                                 }
                             )
+
                         }
                     }
                 }
@@ -161,6 +164,7 @@ fun TasksScreen(
         }
     }
 }
+
 
 
 

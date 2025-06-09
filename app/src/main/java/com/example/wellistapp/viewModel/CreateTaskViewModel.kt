@@ -40,24 +40,32 @@ class CreateTaskViewModel @Inject constructor(private val repository: TaskReposi
 
     fun saveTask() {
         viewModelScope.launch {
-             val current = _uiState.value
+            val current = _uiState.value
 
-             if (current.taskName.isNullOrBlank()){
-                 _uiState.value = current.copy(errorMessage = "name cannot be null or empty")
-                 return@launch
-             }
+            if (current.taskName.isNullOrBlank()) {
+                _uiState.value = current.copy(errorMessage = "name cannot be null or empty")
+                return@launch
+            }
 
             _uiState.value = current.copy(isSaving = true, errorMessage = null)
+
             try {
-                val newTask = Task(
+                val task = Task(
+                    id = current.taskId ?: 0, // se 0, DAO deve tratar como nova inserção se necessário
                     title = current.taskName,
                     description = current.taskDescription ?: "",
                     priority = current.taskPriority ?: Priority.LOW,
                     term = current.taskDate ?: Date().time
                 )
-                repository.insert(newTask)
 
-                _uiState.value = CreateTaskUiState()
+                if (current.taskId == null) {
+                    repository.insert(task)
+                } else {
+                    repository.update(task)
+                }
+
+                _uiState.value = CreateTaskUiState() // limpa após salvar
+
             } catch (e: Exception) {
                 _uiState.value = current.copy(
                     isSaving = false,
@@ -66,4 +74,22 @@ class CreateTaskViewModel @Inject constructor(private val repository: TaskReposi
             }
         }
     }
+
+
+
+    fun loadTask(taskId: Int) {
+        viewModelScope.launch {
+            repository.getTask(taskId).collect { task ->
+                _uiState.value = CreateTaskUiState(
+                    taskId = task.id,
+                    taskName = task.title,
+                    taskDescription = task.description,
+                    taskPriority = task.priority,
+                    taskDate = task.term
+                )
+            }
+        }
+    }
+
+
 }

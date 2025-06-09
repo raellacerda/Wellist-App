@@ -4,6 +4,7 @@ import com.example.wellistapp.data.Priority
 
 
 data class CreateTaskUiState(
+    val taskId: Int? = null, // <- novo campo
     val taskName: String? = null,
     val taskDescription: String? = null,
     val taskPriority: Priority? = null,

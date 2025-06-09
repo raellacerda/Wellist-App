@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,15 +46,23 @@ import com.example.wellistapp.viewModel.CreateTaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateTaskScreen(navController: NavController) {
+fun CreateTaskScreen(
+    navController: NavController,
+    taskId: Int? = null
+) {
     val viewModel: CreateTaskViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+
+
+    LaunchedEffect(taskId) {
+        taskId?.let { viewModel.loadTask(it) }
+    }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Create task")
+                    Text(if (taskId == null) "Create task" else "Edit task")
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
@@ -70,20 +79,19 @@ fun CreateTaskScreen(navController: NavController) {
             )
         }
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .padding(it),
             horizontalAlignment = Alignment.Start
         ) {
-            // permanece na ui pq so diz respeito a ela
             val focusManager = LocalFocusManager.current
-            val focusRequesterDescription = remember { FocusRequester()}
-
+            val focusRequesterDescription = remember { FocusRequester() }
 
             TextBox(
                 value = uiState.taskName ?: "",
-                onValueChange = {viewModel.onChangeTaskName(it)},
-                modifier = Modifier.fillMaxWidth()
+                onValueChange = { viewModel.onChangeTaskName(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(20.dp),
                 label = "Name",
                 maxLines = 1,
@@ -95,10 +103,12 @@ fun CreateTaskScreen(navController: NavController) {
                 ),
                 imeAction = ImeAction.Next
             )
+
             TextBox(
                 value = uiState.taskDescription ?: "",
-                onValueChange = {viewModel.onChangeTaskDescription(it)},
-                modifier = Modifier.fillMaxWidth()
+                onValueChange = { viewModel.onChangeTaskDescription(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(20.dp)
                     .focusRequester(focusRequesterDescription),
                 label = "Description",
@@ -111,9 +121,10 @@ fun CreateTaskScreen(navController: NavController) {
                     }
                 )
             )
+
             DatePickerComponent(
                 dateSelected = uiState.taskDate ?: 0L,
-                onDateSelected = {viewModel.onChangeTaskDate(it)}
+                onDateSelected = { viewModel.onChangeTaskDate(it) }
             )
 
             Text(
@@ -122,10 +133,13 @@ fun CreateTaskScreen(navController: NavController) {
                     .fillMaxWidth()
                     .padding(start = 20.dp)
             )
+
             PriorityRadioGroupComponent(
                 modifier = Modifier.padding(20.dp),
                 selectedOption = uiState.taskPriority?.name ?: Priority.LOW.name,
-                onOptionSelected = {viewModel.onChangeTaskPriority(Priority.valueOf(it))}
+                onOptionSelected = {
+                    viewModel.onChangeTaskPriority(Priority.valueOf(it))
+                }
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -133,6 +147,7 @@ fun CreateTaskScreen(navController: NavController) {
             if (uiState.isSaving) {
                 CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
             }
+
             uiState.errorMessage?.let {
                 Text(
                     text = it,
@@ -149,10 +164,10 @@ fun CreateTaskScreen(navController: NavController) {
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Row (
+                Row(
                     modifier = Modifier.padding(16.dp),
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_add_task_24),
                         contentDescription = "icon add task",
@@ -160,11 +175,11 @@ fun CreateTaskScreen(navController: NavController) {
                     )
                     Text("Save")
                 }
-
             }
         }
     }
 }
+
 
 
 
